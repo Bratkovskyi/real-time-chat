@@ -1,4 +1,4 @@
-import React, { createContext } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
@@ -6,10 +6,9 @@ import reportWebVitals from './reportWebVitals';
 import 'firebase/firestore';
 import 'firebase/auth';
 import { initializeApp } from 'firebase/app'
-import firebase from 'firebase/compat/app';
+// import firebase from 'firebase/compat/app';
 import { getAuth } from 'firebase/auth';
-
-
+import { getFirestore} from "firebase/firestore"
 
 // firebase.initializeApp({
 //   apiKey: "AIzaSyDuRJINf9QjQMns2vw88nhve6_354wszf8",
@@ -39,24 +38,15 @@ const firebaseConfig = {
   measurementId: "G-EJ2JKEN7F8"
 };
 
- 
-// export const Context = createContext(null
-// Initialize Firebase
+
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app)
-// const firestore = firebase.firestore()
-// const analytics = getAnalytics(app);
+export const db = getFirestore(app);
 
 ReactDOM.render(
-  // <Context.Provider value = {{
-  //   firebase,
-  //   auth,
-  //   firestore
-  // }}>
     <React.StrictMode>
       <App />
     </React.StrictMode>
-  // </Context.Provider>
   ,
   document.getElementById('root')
 );

@@ -1,0 +1,11 @@
+.containerMessages{
+    position: relative; 
+    top: 15px;
+    max-width: 1100px;
+}
+.containerMessage{
+    margin: 10px 10px 10px auto;
+    border-radius: 50px;
+    box-shadow: 6px 0px 12px 0px #943ba38f;
+    padding: 5px 25px;
+}
