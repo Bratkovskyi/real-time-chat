@@ -5,121 +5,102 @@ import { auth, db } from '..';
 import Loader from './Loader';
 import { serverTimestamp,  collection, addDoc, orderBy, query} from "firebase/firestore"; 
 import { useCollectionData, } from "react-firebase-hooks/firestore"
-// import SendIcon from '@mui/icons-material/Send';
+import ScrollableFeed from 'react-scrollable-feed'
+import SendIcon from '@mui/icons-material/Send';
 import Message from './Message'
 import "./Chat.css"
+import WhiteButton from '../ui/WhiteButton/WhiteButton';
 
 
 const Chat = () => {
+    
     const [user]  = useAuthState(auth)
     const [value, setValue] = useState('')
-    
-    // const messagesColection = collection(db, "messages")
     const messagesColection = collection(db, "messages")
-
     const queryMessages = query(messagesColection, orderBy("createdAt"));
-    // const qwe = async() => {
-    //     const querySnapshot = await getDocs(q);
-    //     querySnapshot.forEach((doc) => {
-    //         console.log(doc.data())
-    //     });
-    // }
-    // qwe()
-
     const [messages, loading] = query(useCollectionData(queryMessages, orderBy('createdAt')))
-    // console.log("messages", messages)
- 
-    // const citiesRef = collection(db, 'cities');
-    // citiesRef(orderBy("state"))
-    // console.log("q", q())
-    // console.log("citiesRef",citiesRef)
-
-    // const q = query(collection(db, "cities"), orderBy("population"));
-    // const qwe = async() => {
-    //     const querySnapshot = await getDocs(q);
-    //     querySnapshot.forEach((doc) => {
-    //         console.log(doc.id, " => ", doc.data());
-    //     });
-    // }
-    // qwe()
-  
     
-    // console.log(qwe())
-    // messages.map( e=>  console.log(e.createdAt))
-
-
-    // console.log("messagesColection",messagesColection)
-    // const q = query(messagesColection, orderBy("createdAt"))
-    // console.log("q", q)
-
-    // orderBy(messagesColection, "messages", 'createdAt')
-
-
     const sendMessage = async() => {
-
         await addDoc(messagesColection, {
+                // id: PlusId()
                 displayName: user.displayName,
                 uid: user.uid,
                 photoURL: user.photoURL,
                 text: value,
                 createdAt: serverTimestamp(),
           });
-          
           setValue('')
-        }
-        
+    }
+
     if (loading) {
         return <Loader/>
     }
   
     return (
-        <Container>
+        <Container className={"chatPage"}>
             <Grid Container
                 justifyContent={"center"}
                 alignItems={"center"}
                 className={"containerMessages"}
-                // style={{height: window.innerHeight - 50}}
             >
-                <div style={{height: '80vh', border:'1px solid gray', overflowY: 'auto', marginBottom: "15px"}}>
-                    {messages.map( message => 
-                        <div 
-                            className='containerMessage'
-                            style={{
-                            margin:10,
-                            background: user.uid === message.uid ? 'linear-gradient(333deg, #253be2b3, #00000000)' : 'linear-gradient(333deg, #253be2b3, #00000000)',
-                            marginLeft: user.uid === message.uid ? 'auto' : '10px',
-                            width: 'fit-content',
-                            }}>
-                            <Message
-                                name={message.displayName}
-                                avatar={message.photoURL}
-                                text={message.text}
-                                uid={message.uid}
-                            ></Message>
+                <div style={{height: '75vh', overflowY: 'auto', marginBottom: "15px"}}>
+                    <ScrollableFeed id={"forScroll"}>
+                        {messages.map( (message) => 
                             
-                            {/* <Grid container>
-                                <Avatar src={message.photoURL}/>
-                                <div>{message.displayName}</div>
-                            </Grid>
-                            <div>{message.text}</div> */}
-                        </div>)}
-                        
+                            <div
+                                key={message} 
+                                className='containerMessage'
+                                style={{
+                                margin:10,
+                                boxShadow: user.uid === message.uid ? '6px 0px 12px 0px #943ba38f' : 'rgb(0 0 0 / 25%) 2px -3px 6px 2px',
+                                background: user.uid === message.uid ? 'linear-gradient(120deg, #248a52, #257287)' : 'rgba(0, 0, 0, .3)',
+                                textShadow: user.uid === message.uid ? 'none' : '0 1px 1px rgb(0 0 0 / 20%)',
+                                marginLeft: user.uid === message.uid ? 'auto' : '10px',
+                                borderRadius: user.uid === message.uid ? '10px 10px 0 10px' : '10px 10px 10px 0',
+                                width: 'fit-content',
+                                }}>
+                                <Message
+                                    uid={message.uid}
+                                    name={message.displayName}
+                                    avatar={message.photoURL}
+                                    text={message.text}
+                                ></Message>
+                            </div>
+
+                        )}
+                    </ScrollableFeed>
                 </div>
                 {(value !== '') ?   
                     <Grid 
+                        container
                         direction={"column"}
                         alignItems={"flex-end"}
-                        container
-                            // style={{width: '80%'}}
+                        marginBottom={"10px"}
+                        className={"areaMessage"}
                     >
                         <TextField 
                             fullWidth
-                            rowsMax={2}
+                            maxRows={2}
                             variant={"outlined"}
                             value={value}
                             onChange={e => setValue(e.target.value)}
+                            marginBottom={"10px"}
                             />
-                        <Button onClick={sendMessage} variant={"outlined"}>Send</Button>
+                        <WhiteButton
+                            // onKeyPress={(event) => {
+                            //     if(event.key === "Enter") {
+                            //         return sendMessage
+                            //     }
+                            // }} 
+                            size="large" 
+                            onClick={sendMessage} 
+                            variant={"outlined"} 
+                            endIcon={<SendIcon />}
+                            spacing={2}
+                            style={{position:"relative", top: "5px"}} 
+                        >
+                            Send
+                        </WhiteButton>
                         
                     </Grid>                                
                 :
@@ -127,7 +108,8 @@ const Chat = () => {
                         container
                         direction={"column"}
                         alignItems={"flex-end"}
-                        // style={{width: '80%'}}
+                        marginBottom={"10px"}
+                        className={"areaMessage"}
                         >
                         <TextField
                             error
@@ -137,7 +119,7 @@ const Chat = () => {
                             value={value}
                             onChange={e => setValue(e.target.value)}
                         />
-                        <Button disabled variant={"outlined"} >Send</Button>
+                        <Button style={{position:"relative", top: "5px"}} spacing={2} size="large" disabled variant={"outlined"} endIcon={<SendIcon />}>Send</Button>
                 </Grid>  
                 }    
             </Grid>

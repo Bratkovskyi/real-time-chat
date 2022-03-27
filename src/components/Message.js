@@ -6,6 +6,7 @@ import { auth } from '..';
 
 const Message = (props) => {
     const [user]  = useAuthState(auth)
+ 
     
     return (
         <div className='Message'>
@@ -25,6 +26,7 @@ const Message = (props) => {
             style={{
                 display: "flex",
                 justifyContent: user.uid === props.uid ? 'flex-end' : 'flex-start;',
+                color: user.uid === props.uid ? '#fff' : '#ffffffa3',
             }}
          >{props.text}</div>
         </div>
